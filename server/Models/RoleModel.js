@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
-const md5 = require('blueimp-md5')
 
-const userSchema = new mongoose.Schema({    
+const roleSchema = new mongoose.Schema({    
     name:{type:String,required:true}, //角色名称 
     auth_time:String,    //授权时间
     auth_name:String,         //授权人
@@ -9,4 +8,4 @@ const userSchema = new mongoose.Schema({
     menus:{type:Array,required:true},
 });
 
-const UserModel = mongoose.model('role',userSchema);
+module.exports = roleSchema;

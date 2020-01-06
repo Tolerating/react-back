@@ -1,14 +1,27 @@
 import React, { Component } from 'react';
-import { Form, Icon, Input, Button } from 'antd';
+import { Form, Icon, Input, Button ,message} from 'antd';
+import {reqLogin} from '../../api/index'
+import storageUtils from '../../utils/storageUtils.js'
+import md5 from 'md5'
 import './login.less'
 /* 登录的路由组件 */
 class Login extends Component {
     handleSubmit = (e)=>{
         e.preventDefault();
-        this.props.form.validateFields((err, values) => {
+        this.props.form.validateFields(async (err, values) => {
             if (!err) {
-              console.log('提交ajax请求', values);
-              this.props.history.replace('/');
+            //   console.log('提交ajax请求', values);
+                const {username,password} = values;
+                const data = await reqLogin(username,password);
+                console.log(data);
+                if(data.status == 0){
+                    storageUtils.saveUser(data.data[0]);
+                    this.props.history.replace('/admin/home');  
+                }else{
+                    message.error(data.msg);
+                }
+                console.log(data);
+               
             }else{
                 console.log("校验失败!!");
             }

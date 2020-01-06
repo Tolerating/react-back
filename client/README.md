@@ -156,3 +156,29 @@ class LeftNav extends Component{
 }
 export default withRouter(LeftNav);
 ```
+
+
+## prop-types
+
+## react声明周期
+
+### componentWillMount
+为第一次render()准备数据
+
+### componentDidMount
+执行异步任务:发送异步ajax请求
+
+## this.setState
+`setState()`不能立即获取最新的状态,因为`setState()`是异步更新状态的的
+```jsx
+this.setState(Object,callback)
+//Object为要更新的对象,callback是在状态更新且重新render()后执行的回调
+```
+
+## 组件间通信
+props分为一般属性和函数属性
+一般属性将值从父组件传递到子组件
+函数属性将值从子组件传递到父组件
+```
+<Button setForm={(form)=>{this.form = from}}/>
+```

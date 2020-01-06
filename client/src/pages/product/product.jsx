@@ -10,10 +10,10 @@ class Product extends Component {
     render() {
         return (
             <Switch>
-                <Route path='/product' component={ProductHome} exact></Route>
-                <Route path='/product/addupate' component={ProductAddUpdate}></Route>
-                <Route path='/product/detail' component={ProductDetail}></Route>
-                <Redirect to='/product'/>
+                <Route path='/admin/product' component={ProductHome} exact></Route>
+                <Route path='/admin/product/addupate' component={ProductAddUpdate}></Route>
+                <Route path='/admin/product/detail' component={ProductDetail}></Route>
+                <Redirect to='/admin/product'/>
             </Switch>
         );
     }

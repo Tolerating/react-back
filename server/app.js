@@ -3,8 +3,11 @@ let app = require('koa')()
   , json = require('koa-json')
   , onerror = require('koa-onerror');
 
-let index = require('./routes/index');
 let users = require('./routes/users');
+let login = require('./routes/login');
+let image = require('./routes/image');
+let products = require('./routes/products');
+let category = require('./routes/category');
 const roles = require('./routes/roles');
 
 
@@ -12,7 +15,7 @@ const roles = require('./routes/roles');
 
 // error handler
 // onerror(app);
-// app.use(require('koa-bodyparser')());
+app.use(require('koa-bodyparser')());
 // app.use(json());
 // app.use(logger());
 
@@ -28,8 +31,12 @@ const roles = require('./routes/roles');
 app.use(require('koa-static')(__dirname + '/public'));
 
 // routes definition
-app.use(index.routes(), index.allowedMethods());
 app.use(users.routes(), users.allowedMethods());
+app.use(login.routes(), login.allowedMethods());
+app.use(image.routes(), image.allowedMethods());
+app.use(products.routes(), products.allowedMethods());
+app.use(category.routes(), category.allowedMethods());
+app.use(roles.routes(), roles.allowedMethods());
 
 // 错误日志
 // app.on('error', (err, ctx) => {

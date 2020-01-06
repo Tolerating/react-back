@@ -26,25 +26,13 @@ class DB {
         
     }
     /* 
+    tableName:集合名
     conditions:查询条件
     projecttion:投影
-    options:查询选项
+    options:查询选项{skip:Number,limit:Number}
     schema:约束文档
     */
     find({tableName,conditions,projecttion = null,options = null,schema}){
-        // const userSchema = new mongoose.Schema({
-        //     username:{type:String,required:true},
-        //     password:{type:String,required:true},
-        //     phone:String,
-        //     email:String,
-        //     create_time:{type:Number,default:Date.now},
-        //     role:Object
-        // });
-        
-        // let userModel = mongoose.model('users',userSchema);
-        // userModel.find({username:"admin"},(err,docs)=>{
-        //     console.log(docs);
-        // });
         return new Promise((resolve,reject)=>{
             try {
                 this.connect().then(()=>{
@@ -53,7 +41,31 @@ class DB {
                         if(!err){
                             resolve(docs);
                         }else{
-                            console.log("||");
+                            reject(err);
+                        }
+                    });
+                })
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+    /* 
+    tableName:集合名
+    conditions:查询条件
+    doc:修改后的对象
+    options:查询选项{skip:Number,limit:Number}
+    schema:约束文档
+    */
+    update({tableName,conditions,doc,options = null,schema}){
+        return new Promise((resolve,reject)=>{
+            try {
+                this.connect().then(()=>{
+                    let models = mongoose.model(tableName,schema);
+                    models.updateMany(conditions,doc,options,(err)=>{
+                        if(!err){
+                            resolve("1");
+                        }else{
                             reject(err);
                         }
                     });
@@ -64,14 +76,53 @@ class DB {
         });
     }
 
-    update(){
-
+    /* 
+    tableName:集合名
+    doc:新增的对象
+    schema:约束文档
+    */
+    insert({tableName,doc,schema}){
+        return new Promise((resolve,reject)=>{
+            try {
+                this.connect().then(()=>{
+                    let models = mongoose.model(tableName,schema);
+                    models.create(doc,(err,jellybean, snickers)=>{
+                        console.log(jellybean);
+                        console.log(snickers);
+                        if(!err){
+                            resolve("success");
+                        }else{
+                        }
+                    });
+                })
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
-    insert(){
-
+    /* 
+    tableName:集合名
+    conditions:查询条件
+    schema:约束文档
+    */
+    delete({tableName,conditions,schema}){
+        return new Promise((resolve,reject)=>{
+            try {
+                this.connect().then(()=>{
+                    let models = mongoose.model(tableName,schema);
+                    models.create(conditions,(err)=>{
+                        if(!err){
+                            resolve("success");
+                        }else{
+                            reject(err);
+                        }
+                    });
+                })
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 }
-// let test = new DB();
-// test.find()
 module.exports = new DB();

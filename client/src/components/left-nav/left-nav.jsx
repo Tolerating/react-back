@@ -83,14 +83,14 @@ class LeftNav extends Component {
     在第一次render()之前执行一次
     为第一次render()准备数据(同步的)
     */
-   componentWillMount(){
-       this.menuNodes = this.getMenuNOdes(menuList);
-   }
+    componentWillMount(){
+        this.menuNodes = this.getMenuNOdes(menuList);
+    }
     render() {
         let path = this.props.location.pathname;
         const openKey = this.openKey;
-        if(path.indexOf('/product') === 0){
-            path = '/product';
+        if(path.indexOf('/admin/product') === 0){
+            path = '/admin/product';
         }
         return (
             <div className="left-nav">

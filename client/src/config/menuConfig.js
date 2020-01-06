@@ -1,54 +1,54 @@
 const menuList = [
     {
         title:'首页',
-        key:'/home',
+        key:'/admin/home',
         icon:'home',
     },
     {
         title:'商品',
-        key:'/products',
+        key:'/admin/products',
         icon:'appstore',
         children:[
             {
                 title:'品类管理',
-                key:'/category',
+                key:'/admin/category',
                 icon:'bars'
             },
             {
                 title:'商品管理',
-                key:'/product',
+                key:'/admin/product',
                 icon:'tool'
             },
         ]
     },
     {
         title:'用户管理',
-        key:'/user',
+        key:'/admin/user',
         icon:'user',
     },
     {
         title:'角色管理',
-        key:'/role',
+        key:'/admin/role',
         icon:'safety',
     },
     {
         title:'图形图表',
-        key:'/charts',
+        key:'/admin/charts',
         icon:'area-chart',
         children:[
             {
                 title:'柱形图',
-                key:'/charts/bar',
+                key:'/admin/charts/bar',
                 icon:'bar-chart'
             },
             {
                 title:'折线图',
-                key:'/charts/line',
+                key:'/admin/charts/line',
                 icon:'line-chart'
             },
             {
                 title:'饼图',
-                key:'/charts/pie',
+                key:'/admin/charts/pie',
                 icon:'pie-chart'
             },
         ]

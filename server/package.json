@@ -17,10 +17,11 @@
     "koa-json": "^1.1.3",
     "koa-logger": "^1.3.1",
     "koa-onerror": "^1.3.1",
-    "koa-router": "^5.4.0",
+    "koa-router": "^5.4.2",
     "koa-static": "^1.5.2",
     "koa-views": "^3.1.0",
-    "mongoose": "^5.8.3"
+    "md5": "^2.2.1",
+    "mongoose": "^5.8.4"
   },
   "devDependencies": {
     "@types/koa": "^2.11.0",

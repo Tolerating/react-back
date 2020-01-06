@@ -1,26 +1,56 @@
 var router = require('koa-router')();
 let db = require('../utils/db');
-let userModel = require('../Models/UserModel');
+let userSchema = require('../Models/UserModel');
 
-router.prefix('/users');
+router.prefix('/manage');
 
-router.get('/', function *(next) {
-  this.body = 'this is a users response!';
+/* 
+添加用户
+|参数		|是否必选 |类型     |说明
+|username    |Y       |string   |用户名
+|password    |Y       |string   |密码
+|phone       |N       |string   |手机号
+|email       |N       |string   |邮箱
+|role_id     |N       |string   |角色ID
+*/
+router.post('/user/add',function* (next){
+    let increase = this.request.body;
+    yield db.insert({tableName:'users',doc:increase,schema:userSchema}).then(val =>{
+        this.body = val;
+    }).catch(err =>{
+        this.body = err;
+    });
 });
 
-router.get('/bar', function *(next) {
+/* 
+更新用户
+|参数		|是否必选 |类型     |说明
+|_id         |Y       |string   |ID
+|username    |N       |string   |用户名
+|phone       |N       |string   |手机号
+|email       |N       |string   |邮箱
+|role_id     |N       |string   |角色ID
 
-  this.body = 'this is a users/bar response!';
+*/
+router.post('/user/update',function* (next){
+    let {_id,password,username,phone,email,role_id} = this.request.body;
 });
 
-router.get('/test',async function (ctx,next){
-  console.log(next);
-  let a = {}
-  await db.find({tableName:'users',conditions:{username:"admin"},schema:userModel}).then((value)=>{
-    a.body = value;
-  }).catch((err)=>{
-    this.body = err;
-  });
-  this.body = a;
+/* 
+获取所有用户列表
+*/
+router.get('/user/list',function* (next){
+    
 });
+
+/* 
+删除用户
+|参数		|是否必选 |类型     |说明
+|userId     |Y       |string   |用户ID
+*/
+router.post('/user/delete',function* (next){
+    let {userId} = this.request.body;
+});
+
+
 module.exports = router;
