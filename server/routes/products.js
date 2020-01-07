@@ -1,4 +1,7 @@
 const router = require('koa-router')();
+const mongoose = require('mongoose');
+const db = require('../utils/db');
+const ProductsSchema = require('../Models/ProductModel');
 router.prefix('/manage');
 
 /* 
@@ -8,7 +11,32 @@ router.prefix('/manage');
 |pageSize   |Y       |Number   |每页条目数
 */
 router.get('/product/list',function* (next){
+    let count = yield db.count({tableName:'products',conditions:{},schema:ProductsSchema}).then(val=>{
+        return val;
+    }).catch(err=>{
+        this.body = {
+            "status": 1,
+            "msg":err.message
+        }
+    });
     let {pageNum,pageSize} = this.query;
+    yield db.find({tableName:'products',conditions:{},options:{skip:(pageNum-1)*pageSize,limit:Number(pageSize)},schema:ProductsSchema}).then(val=>{
+        this.body = {
+            "status": 0,
+            "data": {
+                "pageNum": pageNum,
+                "total": count,
+                "pages": Math.ceil(count/pageSize),
+                "pageSize": pageSize,
+                "list": val
+            }
+        }
+    }).catch(err=>{
+        this.body = {
+            "status": 1,
+            "msg":err.message
+        }
+    });
 });
 
 /* 
@@ -18,9 +46,45 @@ router.get('/product/list',function* (next){
 |pageSize      |Y       |Number   |每页条目数
 |productName   |N       |String   |根据商品名称搜索
 |productDesc   |N       |String   |根据商品描述搜索
+
+$regex表示一个正则表达式，匹配了key
+$or为模糊查询  格式:$or:[{name:{$regex: String(key),$options: '$i'}},{}....]
+
 */
-router.get('/product/list',function* (next){
-    let {pageNum,pageSize,productName,productDesc} = this.query;
+router.get('/product/search',function* (next){
+    let {pageNum,pageSize,productName = null,productDesc = null} = this.query;
+    let condition = {};
+    // let query = new RegExp(searchName,'i');
+    if(productName){
+        condition = {$or: [{"name": {$regex: String(productName)}}]};
+    }else{
+        condition = {$or: [{"desc": {$regex: String(productDesc)}}]};
+    }
+    let count = yield db.count({tableName:'products',conditions:condition,schema:ProductsSchema}).then(val=>{
+        return val;
+    }).catch(err=>{
+        this.body = {
+            "status": 1,
+            "msg":err.message
+        }
+    });
+    yield db.find({tableName:'products',conditions:condition,options:{skip:(pageNum-1)*pageSize,limit:Number(pageSize)},schema:ProductsSchema}).then(val=>{
+        this.body={
+            "status": 0,
+            "data": {
+                "pageNum": pageNum,
+                "total": count,
+                "pages": Math.ceil(count/pageSize),
+                "pageSize": pageSize,
+                "list": val
+            }
+        }
+    }).catch(err=>{
+        this.body = {
+            "status": 1,
+            "msg":err.message
+        }
+    });
 });
 
 /* 
@@ -60,7 +124,16 @@ router.post('/product/update',function* (next){
 |productId    |Y       |string   |商品名称
 |status       |Y       |number   |商品状态值
 */
-router.post('/product/update',function* (next){
+router.post('/product/updateStatus',function* (next){
     let {productId,status} = this.request.body;
+    yield db.update({tableName:'products',conditions:{_id:productId},doc:{$set:{status}},schema:ProductsSchema}).then(val=>{
+        this.body={
+            "status": 0
+        }
+    }).catch(err=>{
+        this.body={
+            "status": 1
+        }
+    });
 });
 module.exports = router

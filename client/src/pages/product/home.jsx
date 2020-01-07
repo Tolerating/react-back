@@ -1,57 +1,17 @@
 import React, { Component } from 'react'
-import {Card,Select,Input,Button,Icon,Table} from 'antd'
+import {Card,Select,Input,Button,Icon,Table, message} from 'antd'
 import LinkButton from '../../components/link-button/linkButton'
+import {reqProducts,reqSearchProducts,reqUpdateStatus} from '../../api/index'
+import {PAGE_SIZE} from '../../utils/constants'
 const Option = Select.Option;
 /* product的默认子路由组件 */
 class ProductHome extends Component {
     state = {
-        product:[
-            {
-                status:1,
-                _id:1,
-                name:'联想ThinkPad 翼480',
-                desc:'年度重量级新品,X390、T490全新登场 更加轻薄机身设计',
-                price:6600,
-                pCategoryId:'12',
-                categoryId:'10',
-                // detail:'',
-                __v:0
-            },
-            {
-                status:1,
-                _id:2,
-                name:'联想ThinkPad 翼480',
-                desc:'年度重量级新品,X390、T490全新登场 更加轻薄机身设计',
-                price:6600,
-                pCategoryId:'12',
-                categoryId:'10',
-                // detail:'',
-                __v:0
-            },
-            {
-                status:1,
-                _id:3,
-                name:'联想ThinkPad 翼480',
-                desc:'年度重量级新品,X390、T490全新登场 更加轻薄机身设计',
-                price:6600,
-                pCategoryId:'12',
-                categoryId:'10',
-                // detail:'',
-                __v:0
-            },
-            {
-                status:1,
-                _id:4,
-                name:'联想ThinkPad 翼480',
-                desc:'年度重量级新品,X390、T490全新登场 更加轻薄机身设计',
-                price:6600,
-                pCategoryId:'12',
-                categoryId:'10',
-                // detail:'',
-                __v:0
-            },
-            
-        ]
+        total:0,       //商品的总数量
+        products:[],   //商品的数组
+        loading:false,  //是否正在加载中
+        searchName:'',  //搜索的关键字
+        searchType:'productName'    //根据哪个字段搜索
     }
     //初始化table的列的数组
     initColumns = ()=>{
@@ -71,13 +31,14 @@ class ProductHome extends Component {
             },
             {
                 title: '状态',
-                dataIndex: 'status',
+                // dataIndex: 'status',
                 width:100,
-                render:(status)=>{
+                render:(product)=>{
+                    const {status,_id} = product;
                     return(
                         <span>
-                            <Button type='primary'>下架</Button>
-                            <span>在售</span>
+                            <Button type='primary' onClick={() =>this.updateStatus(_id,status===1?2:1)}>{status === 1 ? '下架' : '上架'}</Button>
+                            <span>{status === 1 ? '在售' : '已下架'}</span>
                         </span>
                     )
                 }
@@ -94,19 +55,63 @@ class ProductHome extends Component {
             }
           ];
     }
+
+    // 获取指定页码的列表数据显示
+    getProducts = async (pageNum)=>{
+        this.pageNum = pageNum;    //保存pageNum,让其它方法可以看到
+        this.setState({loading:true});
+        const {searchName,searchType} = this.state;
+        // 如果搜索关键字有值,说明我们要做搜索分页
+        let result;
+        if(searchName){
+            // console.log(searchName);
+            result = await reqSearchProducts({pageNum,pageSize:PAGE_SIZE,searchName,searchType});
+        }else{
+            result = await reqProducts(pageNum,PAGE_SIZE);
+        }
+        this.setState({loading:false});
+        if(result.status === 0){
+            // 取出分页数据,更新状态,显示分页列表
+            const {total,list} = result.data;
+            this.setState({
+                total,
+                products:list
+            });
+        }
+    }
+
+    // 更新指定商品的状态
+    updateStatus = async (productId,status)=>{
+        const result = await reqUpdateStatus(productId,status);
+        if(result.status === 0){
+            message.success('更新商品成功');
+            this.getProducts(this.pageNum);
+        }
+    }
     componentWillMount(){
         this.initColumns();
     }
 
+    componentDidMount(){
+        this.getProducts(1);
+    }
+
     render() {
+        // 取出状态数据
+        const {products,total,loading,searchName,searchType} = this.state;
         const title = (
             <span>
-                <Select value='1' style={{width:150}}>
-                    <Option value='1'>按名称搜索</Option>
-                    <Option value='2'>按描述搜索</Option>
+                <Select value={searchType} style={{width:150}} onChange={value=>this.setState({searchType:value})}>
+                    <Option value='productName'>按名称搜索</Option>
+                    <Option value='productDesc'>按描述搜索</Option>
                 </Select>
-                <Input placeholder='关键字' style={{width:200,margin:'0 15px'}}/>
-                <Button type='primary'>搜索</Button>
+                <Input 
+                    placeholder='关键字' 
+                    style={{width:200,margin:'0 15px'}} 
+                    value={searchName}
+                    onChange={event =>this.setState({searchName:event.target.value})}    
+                />
+                <Button type='primary' onClick={()=> this.getProducts(1)}>搜索</Button>
             </span>
         );
         const extra = (
@@ -114,17 +119,23 @@ class ProductHome extends Component {
                 <Icon type='plus'/>
                 添加商品
             </Button>
-        );
-        const products = this.state.product;
-          
+        );          
           
         return (
             <Card title={title} extra={extra}>
                 <Table
                     bordered
-                    rowKey='_id'                     
+                    rowKey='_id'
+                    loading={loading}                     
                     dataSource={products} 
-                    columns={this.columns}/>
+                    columns={this.columns}
+                    pagination={{
+                        total,
+                        defaultPageSize:PAGE_SIZE,
+                        showQuickJumper:true,
+                        onChange:this.getProducts
+                    }}    
+                />
             </Card>
         );
     }

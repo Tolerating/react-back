@@ -12,12 +12,27 @@ export const reqAddUser = (user)=> ajax(BASE+'/manage/user/add',user,'POST');
 // 获取一级/二级分类的列表 
 export const reqCategorys = (parentId) =>ajax(BASE + '/manage/category/list',{parentId});
 
+export const reqCategoryInfo = (categoryId)=>ajax(BASE+'/manage/category/info',{categoryId});
+
 // 添加分类
 export const reqAddCategorys = (parentId,categoryName) =>ajax(BASE + '/manage/category/add',{categoryName,parentId},"POST");
 
 // 更新分类
 export const reqUpdateCategory = (categoryId,categoryName) =>ajax(BASE + '/manage/category/update',{categoryId,categoryName},"POST");
 
+// 获取商品分页列表
+export const reqProducts = (pageNum,pageSize)=>ajax(BASE+'/manage/product/list',{pageNum,pageSize});
+
+// 搜索商品分页列表(根据商品名称/商品描述)
+// searchType:搜索的类型,productName/productDesc
+export const reqSearchProducts = ({pageNum,pageSize,searchName,searchType})=>ajax(BASE+'/manage/product/search',{
+    pageNum,
+    pageSize,
+    [searchType]:searchName
+});
+
+// 更新商品状态(上架/下架)
+export const reqUpdateStatus = (productId,status) => ajax(BASE+'/manage/product/updateStatus',{productId,status},'POST');
 /* 
 json请求的接口请求函数
 */

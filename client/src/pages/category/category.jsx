@@ -43,34 +43,50 @@ class Category extends Component {
     }
 
     /* 更新分类 */
-    updateCategory = async ()=>{
-      /* 隐藏确认框 */
-      this.setState({
-        showStatus:0
+    updateCategory = ()=>{
+
+      // 进行表单验证,只有通过了才处理
+      this.form.validateFields(async (err,values)=>{
+        if(!err){
+          /* 隐藏确认框 */
+          this.setState({
+            showStatus:0
+          });
+          const categoryId = this.category._id;
+          const {categoryName} = values;
+          // 清除输入数据
+          this.form.resetFields();
+          const result = await reqUpdateCategory(categoryId,categoryName);
+          if(result.status ==='0'){
+            this.getCategorys();
+          }
+        }
       });
-      const categoryId = this.category._id;
-      const categoryName = this.form.getFieldValue('categoryName');
-      // 清除输入数据
-      this.form.resetFields();
-      const result = await reqUpdateCategory(categoryId,categoryName);
-      if(result.status ==='0'){
-        this.getCategorys();
-      }
+      
     }
 
     /* 添加分类 */
     addCategory = async ()=> {
-       /* 隐藏确认框 */
-      this.setState({
-        showStatus:0
+      this.form.validateFields(async (err,values)=>{
+        if(!err){
+          /* 隐藏确认框 */
+          this.setState({
+            showStatus:0
+          });
+          const {parentId,categoryName} = values;
+          // 清除输入数据
+          this.form.resetFields();
+          const result = await reqAddCategorys(parentId,categoryName);
+          if(result.status == 0){
+            if(parentId === this.state.parentId){
+              this.getCategorys();
+            }else{
+              this.getCategorys('0');
+            }        
+          }
+        }
       });
-      const {parentId,categoryName} = this.form.getFieldsValue();
-      // 清除输入数据
-      this.form.resetFields();
-      const result = await reqAddCategorys(parentId,categoryName);
-      if(result.status == 0){
-        this.getCategorys();
-      }
+      
     }
 
     //初始化Table所有列的数组
@@ -115,11 +131,14 @@ class Category extends Component {
       });
     }
 
-    /* 异步获取一级/二级分类列表显示 */
-    getCategorys = async ()=>{
+    /* 
+    异步获取一级/二级分类列表显示 
+    parentId:如果没有指定则根据状态中的parentId请求,如果指定了根据指定的请求
+    */
+    getCategorys = async (parentId)=>{
       //在发请求前,显示loading
       this.setState({loading:true});
-      const {parentId} = this.state;
+      parentId = parentId || this.state.parentId;
       //发异步ajax请求,获取分类列表
       const result = await reqCategorys(parentId);
       //在请求完成后,隐藏loading

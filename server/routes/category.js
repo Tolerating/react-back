@@ -70,6 +70,18 @@ router.post('/category/update',function* (next){
 |categoryId    |Y       |string   |父级分类的ID
 */
 router.get('/category/info',function* (next){
-    let {userId} = this.query;
+    let {categoryId} = this.query;
+    yield db.find({tableName:'categories',conditions:{_id:categoryId},schema:CategorySchema}).then(val=>{
+        console.log(val);
+        this.body={
+            "status": 0,
+            "data": val[0]
+        }
+    }).catch(err=>{
+        this.body={
+            "status": 1,
+            "msg": err.message
+        }
+    });
 });
 module.exports = router

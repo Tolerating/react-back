@@ -9,12 +9,16 @@ class DB {
     }
     connect(){
         return new Promise((resolve,reject)=>{
-            if(!this.connection){
-                this.connection = mongoose.connect(config.dbUrl + config.dbName);
-                resolve(this.connection);
-            }else{
-                resolve(this.connection);
-            }
+            try {
+                if(!this.connection){
+                    this.connection = mongoose.connect(config.dbUrl + config.dbName);
+                    resolve(this.connection);
+                }else{
+                    resolve(this.connection);
+                }
+            } catch (error) {
+                reject('数据库连接失败');
+            }  
             
             mongoose.connection.once('open',function(){
                 console.log('数据库连接成功~~~');
@@ -44,6 +48,25 @@ class DB {
                             reject(err);
                         }
                     });
+                })
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    findByconditions({tableName,conditions,projecttion = null,skip = 0,limit=0,schema}){
+        return new Promise((resolve,reject)=>{
+            try {
+                this.connect().then(()=>{
+                    let models = mongoose.model(tableName,schema);
+                    models.find(conditions,projecttion,(err,docs)=>{
+                        if(!err){
+                            resolve(docs);
+                        }else{
+                            reject(err);
+                        }
+                    }).skip(skip).limit(limit);
                 })
             } catch (error) {
                 reject(error);
@@ -119,6 +142,32 @@ class DB {
                         }
                     });
                 })
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    /* 
+    tableName:集合名
+    conditions:查询条件
+    schema:约束文档
+    */
+    count({tableName,conditions,schema}){
+        return new Promise((resolve,reject)=>{
+            try {
+                this.connect().then(()=>{
+                    let models = mongoose.model(tableName,schema);
+                    models.count(conditions,(err,counts)=>{
+                        if(!err){
+                            resolve(counts);
+                        }else{
+                            reject(err);
+                        }
+                    });
+                }).catch(err=>{
+                    reject(err)
+                });
             } catch (error) {
                 reject(error);
             }
