@@ -14,7 +14,7 @@ class Login extends Component {
                 const {username,password} = values;
                 const data = await reqLogin(username,password);
                 console.log(data);
-                if(data.status == 0){
+                if(data.status === 0){
                     storageUtils.saveUser(data.data[0]);
                     this.props.history.replace('/admin/home');  
                 }else{

@@ -10,18 +10,18 @@ router.prefix('/manage');
 |pageNum    |Y       |Number   |页码
 |pageSize   |Y       |Number   |每页条目数
 */
-router.get('/product/list',function* (next){
-    let count = yield db.count({tableName:'products',conditions:{},schema:ProductsSchema}).then(val=>{
+router.get('/product/list',async (ctx,next)=>{
+    let count = await db.count({tableName:'products',conditions:{},schema:ProductsSchema}).then(val=>{
         return val;
     }).catch(err=>{
-        this.body = {
+        return ctx.body = {
             "status": 1,
             "msg":err.message
         }
     });
-    let {pageNum,pageSize} = this.query;
-    yield db.find({tableName:'products',conditions:{},options:{skip:(pageNum-1)*pageSize,limit:Number(pageSize)},schema:ProductsSchema}).then(val=>{
-        this.body = {
+    let {pageNum,pageSize} = ctx.query;
+    await db.find({tableName:'products',conditions:{},options:{skip:(pageNum-1)*pageSize,limit:Number(pageSize)},schema:ProductsSchema}).then(val=>{
+        return ctx.body = {
             "status": 0,
             "data": {
                 "pageNum": pageNum,
@@ -32,7 +32,7 @@ router.get('/product/list',function* (next){
             }
         }
     }).catch(err=>{
-        this.body = {
+        return ctx.body = {
             "status": 1,
             "msg":err.message
         }
@@ -51,8 +51,8 @@ $regex表示一个正则表达式，匹配了key
 $or为模糊查询  格式:$or:[{name:{$regex: String(key),$options: '$i'}},{}....]
 
 */
-router.get('/product/search',function* (next){
-    let {pageNum,pageSize,productName = null,productDesc = null} = this.query;
+router.get('/product/search',async (ctx,next)=>{
+    let {pageNum,pageSize,productName = null,productDesc = null} = ctx.query;
     let condition = {};
     // let query = new RegExp(searchName,'i');
     if(productName){
@@ -60,16 +60,16 @@ router.get('/product/search',function* (next){
     }else{
         condition = {$or: [{"desc": {$regex: String(productDesc)}}]};
     }
-    let count = yield db.count({tableName:'products',conditions:condition,schema:ProductsSchema}).then(val=>{
+    let count = await db.count({tableName:'products',conditions:condition,schema:ProductsSchema}).then(val=>{
         return val;
     }).catch(err=>{
-        this.body = {
+        return ctx.body = {
             "status": 1,
             "msg":err.message
         }
     });
-    yield db.find({tableName:'products',conditions:condition,options:{skip:(pageNum-1)*pageSize,limit:Number(pageSize)},schema:ProductsSchema}).then(val=>{
-        this.body={
+    await db.find({tableName:'products',conditions:condition,options:{skip:(pageNum-1)*pageSize,limit:Number(pageSize)},schema:ProductsSchema}).then(val=>{
+        return ctx.body={
             "status": 0,
             "data": {
                 "pageNum": pageNum,
@@ -80,7 +80,7 @@ router.get('/product/search',function* (next){
             }
         }
     }).catch(err=>{
-        this.body = {
+        return ctx.body = {
             "status": 1,
             "msg":err.message
         }
@@ -98,8 +98,8 @@ router.get('/product/search',function* (next){
 |detail        |N       |string   |商品详情
 |imgs          |N       |array   |商品图片名数组
 */
-router.post('/product/add',function* (next){
-    let {pacategoryId,pCategoryId,name,desc,price,detail,imgs} = this.request.body;
+router.post('/product/add',async (ctx,next)=>{
+    let {pacategoryId,pCategoryId,name,desc,price,detail,imgs} = ctx.request.body;
 });
 
 /* 
@@ -114,8 +114,8 @@ router.post('/product/add',function* (next){
 |detail        |N       |string   |商品详情
 |imgs          |N       |array   |商品图片名数组
 */
-router.post('/product/update',function* (next){
-    let {_id,categoryId,pCategoryId,name,desc,price,detail,imgs} = this.request.body;
+router.post('/product/update',async (ctx,next)=>{
+    let {_id,categoryId,pCategoryId,name,desc,price,detail,imgs} = ctx.request.body;
 });
 
 /* 
@@ -124,14 +124,14 @@ router.post('/product/update',function* (next){
 |productId    |Y       |string   |商品名称
 |status       |Y       |number   |商品状态值
 */
-router.post('/product/updateStatus',function* (next){
-    let {productId,status} = this.request.body;
-    yield db.update({tableName:'products',conditions:{_id:productId},doc:{$set:{status}},schema:ProductsSchema}).then(val=>{
-        this.body={
+router.post('/product/updateStatus',async (ctx,next)=>{
+    let {productId,status} = ctx.request.body;
+    await db.update({tableName:'products',conditions:{_id:productId},doc:{$set:{status}},schema:ProductsSchema}).then(val=>{
+        return ctx.body={
             "status": 0
         }
     }).catch(err=>{
-        this.body={
+        return ctx.body={
             "status": 1
         }
     });

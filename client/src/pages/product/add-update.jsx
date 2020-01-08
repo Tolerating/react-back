@@ -1,21 +1,10 @@
 import React, { Component } from 'react'
 import {Card,Icon,Form,Input,Cascader,Upload,Button} from 'antd'
 import LinkButton from '../../components/link-button/linkButton'
+import PicturesWall from './pictures-wall'
 import {reqCategorys} from '../../api/index'
 const {Item} = Form;
 const {TextArea} = Input;
-const options = [
-    {
-      value: 'zhejiang',
-      label: 'Zhejiang',
-      isLeaf: false,
-    },
-    {
-      value: 'jiangsu',
-      label: 'Jiangsu',
-      isLeaf: false,
-    },
-  ];
 /* product的添加和更新的子路由组件 */
 class ProductAddUpdate extends Component {
     state = {
@@ -30,14 +19,32 @@ class ProductAddUpdate extends Component {
         }
     }
 
-    initOptions = (categorys)=>{
+    initOptions = async (categorys)=>{
         //根据categorys生成options数组
         const options = categorys.map(c =>({
             value: c._id,
             label: c.name,
             isLeaf: false,  //不是叶子
         }));
+        // 如果是一个二级分类商品的更新
+        const {isUpdate,product} = this;
+        const {pCategoryId,categoryId} = product;
+        if(isUpdate && pCategoryId !== '0'){
+            // 获取对应的二级分类表表
+           const subCategorys = await this.getCategorys(pCategoryId);
+            // 生成二级下拉列表的options
+           const childOptions = subCategorys.map(c=>({
+                value: c._id,
+                label: c.name,
+                isLeaf: true,
+            }));
 
+            // 找到当前商品对应的一级option对象
+            const targetOption = options.find(option=>option.value === pCategoryId);
+
+            // 关联对应的一级option上
+            targetOption.children = childOptions;
+        }
         this.setState({
             options
         });
@@ -90,6 +97,7 @@ class ProductAddUpdate extends Component {
         this.props.form.validateFields((error,values)=>{
             if(!error){
                 alert("发送ajax请求");
+                console.log('表单',values);
             }
         });
     }
@@ -98,7 +106,26 @@ class ProductAddUpdate extends Component {
     componentDidMount(){
         this.getCategorys('0');
     }
+    componentWillMount(){
+        const product = this.props.location.state;    //如果是添加没值,否则有值
+
+        //保存是否是更新的标识
+        this.isUpdate = !!product;
+        this.product = product || {};
+    }
     render() {
+        const {isUpdate,product} = this;
+        const {pCategoryId,categoryId} = product;
+        let categoryIds = [];
+        if(isUpdate){
+            if(pCategoryId === '0'){
+                categoryIds.push(categoryId);
+            }else{
+                categoryIds.push(pCategoryId);
+                categoryIds.push(categoryId);
+            }
+            
+        }
         const formItemLayout = {
             labelCol: {span:2},
             wrapperCol: {span:8},
@@ -109,7 +136,7 @@ class ProductAddUpdate extends Component {
                     <Icon type='arrow-left' style={{marginRight:15,fontSize:20}}
                         onClick={()=>this.props.history.goBack()}></Icon>
                 </LinkButton>
-                <span>添加商品</span>
+                <span>{isUpdate?'修改商品':'添加商品'}</span>
             </span>
         );
         const {getFieldDecorator} = this.props.form;
@@ -119,7 +146,7 @@ class ProductAddUpdate extends Component {
                     <Item label='商品名称'>
                         {
                             getFieldDecorator('name',{
-                                initialValue:'',
+                                initialValue:product.name,
                                 rules:[
                                     {required:true,message:'必须输入商品名称'}
                                 ]
@@ -129,7 +156,7 @@ class ProductAddUpdate extends Component {
                     <Item label='商品描述'>
                         {
                             getFieldDecorator('desc',{
-                                initialValue:'',
+                                initialValue:product.desc,
                                 rules:[
                                     {required:true,message:'必须输入商品描述'}
                                 ]
@@ -140,7 +167,7 @@ class ProductAddUpdate extends Component {
                     <Item label='商品价格'>
                         {
                             getFieldDecorator('price',{
-                                initialValue:'',
+                                initialValue:product.price,
                                 rules:[
                                     {required:true,message:'必须输入商品价格'},
                                     {validator:this.validatePrice}
@@ -150,13 +177,20 @@ class ProductAddUpdate extends Component {
                         
                     </Item>
                     <Item label='商品分类'>
-                    <Cascader
-                        options={this.state.options}   //需要显示的列表数据数组
-                        loadData={this.loadData}  //当选择某个列表项,加载下一级列表的监听回调
-                    />
+                        {
+                            getFieldDecorator('categoryIds',{
+                                initialValue:categoryIds,
+                                rules:[
+                                    {required:true,message:'必须输入商品分类'}
+                                ]
+                            })(<Cascader
+                                options={this.state.options}   //需要显示的列表数据数组
+                                loadData={this.loadData}  //当选择某个列表项,加载下一级列表的监听回调
+                            />)
+                        }
                     </Item>
                     <Item label='商品图片'>
-                        <Input type='number' placeholder='商品名称' addonAfter='元'/>
+                        <PicturesWall/>
                     </Item>
                     <Item label='商品详情'>
                         <Input type='number' placeholder='商品名称' addonAfter='元'/>

@@ -1,21 +1,26 @@
-let app = require('koa')()
+let Koa = require('koa')
   , logger = require('koa-logger')
   , json = require('koa-json')
   , onerror = require('koa-onerror');
-
+let koaBody = require('koa-body');
 let users = require('./routes/users');
 let login = require('./routes/login');
 let image = require('./routes/image');
 let products = require('./routes/products');
 let category = require('./routes/category');
 const roles = require('./routes/roles');
-
-
+const app = new Koa();
 
 
 // error handler
 // onerror(app);
-app.use(require('koa-bodyparser')());
+// app.use(require('koa-bodyparser')());
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+      maxFileSize: 200*1024*1024    // 设置上传文件大小最大限制，默认2M
+  }
+}));
 // app.use(json());
 // app.use(logger());
 
@@ -29,6 +34,7 @@ app.use(require('koa-bodyparser')());
 
 //静态资源处理
 app.use(require('koa-static')(__dirname + '/public'));
+console.log(__dirname);
 
 // routes definition
 app.use(users.routes(), users.allowedMethods());

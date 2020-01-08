@@ -8,15 +8,15 @@ router.prefix('/manage');
 |参数		|是否必选 |类型     |说明
 |parentId    |Y       |string   |父级分类的ID
 */
-router.get('/category/list',function* (next){
-    let {parentId} = this.query;
-    yield db.find({tableName:'categories',conditions:{parentId},schema:CategorySchema}).then(val=>{
-        this.body = {
+router.get('/category/list',async (ctx,next)=>{
+    let {parentId} = ctx.query;
+    await db.find({tableName:'categories',conditions:{parentId},schema:CategorySchema}).then(val=>{
+        return ctx.body = {
             "status": 0,
             "data":val
         }
     }).catch(err=>{
-        this.body = {
+        return ctx.body = {
             "status": 1,
             "msg":err.message
         }
@@ -29,14 +29,14 @@ router.get('/category/list',function* (next){
 |parentId      |Y       |string   |父级分类的ID
 |categoryName  |Y       |string   |名称
 */
-router.post('/category/add',function* (next){
-    let {parentId,categoryName} = this.request.body;
-    yield db.insert({tableName:'categories',doc:{parentId:parentId,name:categoryName},schema:CategorySchema}).then(()=>{
-        this.body = {
+router.post('/category/add',async (ctx,next)=>{
+    let {parentId,categoryName} = ctx.request.body;
+    await db.insert({tableName:'categories',doc:{parentId:parentId,name:categoryName},schema:CategorySchema}).then(()=>{
+        return ctx.body = {
             "status": 0
         }
     }).catch(err=>{
-        this.body = {
+        return ctx.body = {
             "status": 1,
             "msg":err.message
         }
@@ -50,14 +50,14 @@ router.post('/category/add',function* (next){
 |categoryId    |Y       |string   |父级分类的ID
 |categoryName  |Y       |string   |名称
 */
-router.post('/category/update',function* (next){
-    let {categoryId,categoryName} = this.request.body;
-    yield db.update({tableName:'categories',conditions:{_id:categoryId},doc:{$set:{name:categoryName}},schema:CategorySchema}).then(()=>{
-        this.body = {
+router.post('/category/update',async (ctx,next)=>{
+    let {categoryId,categoryName} = ctx.request.body;
+    await db.update({tableName:'categories',conditions:{_id:categoryId},doc:{$set:{name:categoryName}},schema:CategorySchema}).then(()=>{
+        return ctx.body = {
             "status": 0
         }
     }).catch(err=>{
-        this.body={
+        return ctx.body={
             "status": 1,
             "msg":err.message
         }
@@ -69,16 +69,16 @@ router.post('/category/update',function* (next){
 |参数		|是否必选 |类型     |说明
 |categoryId    |Y       |string   |父级分类的ID
 */
-router.get('/category/info',function* (next){
-    let {categoryId} = this.query;
-    yield db.find({tableName:'categories',conditions:{_id:categoryId},schema:CategorySchema}).then(val=>{
+router.get('/category/info',async (ctx,next)=>{
+    let {categoryId} = ctx.query;
+    await db.find({tableName:'categories',conditions:{_id:categoryId},schema:CategorySchema}).then(val=>{
         console.log(val);
-        this.body={
+        return ctx.body={
             "status": 0,
             "data": val[0]
         }
     }).catch(err=>{
-        this.body={
+        return ctx.body={
             "status": 1,
             "msg": err.message
         }

@@ -13,12 +13,12 @@ router.prefix('/manage');
 |email       |N       |string   |邮箱
 |role_id     |N       |string   |角色ID
 */
-router.post('/user/add',function* (next){
-    let increase = this.request.body;
-    yield db.insert({tableName:'users',doc:increase,schema:userSchema}).then(val =>{
-        this.body = val;
+router.post('/user/add',async (ctx,next)=>{
+    let increase = ctx.request.body;
+    await db.insert({tableName:'users',doc:increase,schema:userSchema}).then(val =>{
+        return ctx.body = val;
     }).catch(err =>{
-        this.body = err;
+        return ctx.body = err;
     });
 });
 
@@ -32,14 +32,14 @@ router.post('/user/add',function* (next){
 |role_id     |N       |string   |角色ID
 
 */
-router.post('/user/update',function* (next){
-    let {_id,password,username,phone,email,role_id} = this.request.body;
+router.post('/user/update',async (ctx,next)=>{
+    let {_id,password,username,phone,email,role_id} = ctx.request.body;
 });
 
 /* 
 获取所有用户列表
 */
-router.get('/user/list',function* (next){
+router.get('/user/list',async (ctx,next)=>{
     
 });
 
@@ -48,8 +48,8 @@ router.get('/user/list',function* (next){
 |参数		|是否必选 |类型     |说明
 |userId     |Y       |string   |用户ID
 */
-router.post('/user/delete',function* (next){
-    let {userId} = this.request.body;
+router.post('/user/delete',async (ctx,next)=>{
+    let {userId} = ctx.request.body;
 });
 
 

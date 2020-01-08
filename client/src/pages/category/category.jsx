@@ -57,7 +57,7 @@ class Category extends Component {
           // 清除输入数据
           this.form.resetFields();
           const result = await reqUpdateCategory(categoryId,categoryName);
-          if(result.status ==='0'){
+          if(result.status ===0){
             this.getCategorys();
           }
         }
