@@ -110,10 +110,10 @@ class DB {
                 this.connect().then(()=>{
                     let models = mongoose.model(tableName,schema);
                     models.create(doc,(err,jellybean, snickers)=>{
-                        console.log(jellybean);
+                        console.log(jellybean);   //添加成功的文档
                         console.log(snickers);
                         if(!err){
-                            resolve("success");
+                            resolve(jellybean);
                         }else{
                         }
                     });

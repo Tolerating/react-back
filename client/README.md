@@ -1,4 +1,4 @@
-哔哩哔哩视频看到`P69`
+哔哩哔哩视频看到`P93`
 
 目录结构:
 `src`
@@ -129,6 +129,13 @@ store.each(function(value, key) {
 })
 ```
 
+
+
+
+
+
+### 使用富文本编辑器
+安装依赖:`npm install --save react-draft-wysiwyg draft-js html-to-draftjs draftjs-to-html`
 ## vscode自动提示`react`代码
 1.安装`Reactjs code snippets`插件
 2.管理 --> 在线服务设置 --> 禁用自动类型获取勾上
@@ -168,6 +175,18 @@ export default withRouter(LeftNav);
 ### componentDidMount
 执行异步任务:发送异步ajax请求
 
+### componentWillReceiveProps
+```javascript
+/* 
+当组件接收到新的属性时自动调用
+*/
+componentWillReceiveProps(nextProps){
+
+}
+```
+ 
+    
+
 ## this.setState
 `setState()`不能立即获取最新的状态,因为`setState()`是异步更新状态的的
 ```jsx
@@ -179,6 +198,54 @@ this.setState(Object,callback)
 props分为一般属性和函数属性
 一般属性将值从父组件传递到子组件
 函数属性将值从子组件传递到父组件
-```
+```jsx
+//父组件
 <Button setForm={(form)=>{this.form = from}}/>
+
+
+//子组件
+static propType = {
+   categoryName:PropTypes.string.isRequired,
+   setForm:PropTypes.func.isRequired
+}
+componentWillMount(){
+   // 将form对象通过setForm()传递给父组件
+   console.log(this.props.form);
+   this.props.setForm(this.props.form)
+}
+```
+
+子组件调用父组件的方法:将父组件的方法以函数属性的形式传递给子组件,子组件就可以调用<br>
+父组件调用子组件的方法:在父组件中通过ref得到子组件标签对象(也就是组件对象),调用其方法 [使用教程](https://react.docschina.org/docs/refs-and-the-dom.html)<br>
+例子:
+```jsx
+//父组件
+class Example extends Component {
+   constructor(props){
+      super(props);
+      //创建用来保存ref标识的标签对象的容器
+      this.pw = React.createRef();
+   }
+
+   submit = ()=>{
+      //通过this.pw.current访问子组件的属性
+      this.pw.current.getImgs();
+   }
+
+   render() {
+      return <Children ref={this.pw}/>
+   }
+}
+
+//子组件
+class Children extends Component {
+
+   getImgs = ()=>{
+      //.....
+   }
+
+   render() {
+      return <div></div>
+   }
+}
 ```

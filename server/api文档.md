@@ -630,7 +630,7 @@
 
 ### 参数类型:
     |参数		     |是否必选 |类型     |说明
-    |roleName    |Y       |string   |角色名称
+    |roleName    |Y       |string   |
 
 ### 返回示例：
     {

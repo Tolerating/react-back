@@ -99,7 +99,19 @@ router.get('/product/search',async (ctx,next)=>{
 |imgs          |N       |array   |商品图片名数组
 */
 router.post('/product/add',async (ctx,next)=>{
-    let {pacategoryId,pCategoryId,name,desc,price,detail,imgs} = ctx.request.body;
+    // console.log(ctx.request.body);
+    let {name,desc,price,imgs,detail,pCategoryId,categoryId} = ctx.request.body;
+    await db.insert({tableName:'products',doc:{name,desc,price,imgs,detail,pCategoryId,categoryId,status:1},schema:ProductsSchema}).then(val=>{
+        return ctx.body = {
+            "status": 0,
+            "data":val
+        }
+    }).catch(err=>{
+        return ctx.body = {
+            "status": 1,
+            "msg":err.message
+        }
+    });
 });
 
 /* 
@@ -115,7 +127,16 @@ router.post('/product/add',async (ctx,next)=>{
 |imgs          |N       |array   |商品图片名数组
 */
 router.post('/product/update',async (ctx,next)=>{
-    let {_id,categoryId,pCategoryId,name,desc,price,detail,imgs} = ctx.request.body;
+    let {_id,name,desc,price,imgs,detail,pCategoryId,categoryId} = ctx.request.body;
+    await db.update({tableName:'products',conditions:{_id},doc:{$set:{name,desc,price,imgs,detail,pCategoryId,categoryId}},schema:ProductsSchema}).then(val=>{
+        return ctx.body={
+            "status": 0
+        }
+    }).catch(err=>{
+        return ctx.body={
+            "status": 1
+        }
+    });
 });
 
 /* 

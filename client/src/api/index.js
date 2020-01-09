@@ -33,6 +33,21 @@ export const reqSearchProducts = ({pageNum,pageSize,searchName,searchType})=>aja
 
 // 更新商品状态(上架/下架)
 export const reqUpdateStatus = (productId,status) => ajax(BASE+'/manage/product/updateStatus',{productId,status},'POST');
+
+// 删除图片
+export const reqDeleteImg = (name) => ajax(BASE+'/manage/img/delete',{name},'POST');
+
+// 添加/删除商品
+export const reqAddOrUpdateProduct = (product)=> ajax(BASE+'/manage/product/'+(product._id?'update':'add'),product,'POST');
+
+// 获取所有角色的列表
+export const reqRoles = ()=>ajax(BASE+'/manage/role/list');
+
+// 添加角色
+export const reqAddRole = (name)=>ajax(BASE+'/manage/role/add',{name},'POST');
+
+// 更新角色
+export const reqUpdateRole = (role)=>ajax(BASE+'/manage/role/update',role,'POST');
 /* 
 json请求的接口请求函数
 */
