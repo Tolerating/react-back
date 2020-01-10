@@ -44,8 +44,9 @@ class Header extends Component {
         Modal.confirm({
             title: '确定退出?',
             onOk:() => {
-              console.log('OK');
+            //   console.log('OK');
               memoryUtils.user = {};
+              localStorage.clear();
               this.props.history.replace('/login');
             },
           });

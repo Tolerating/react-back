@@ -47,7 +47,7 @@ class DB {
                         }else{
                             reject(err);
                         }
-                    });
+                    }).lean();
                 })
             } catch (error) {
                 reject(error);
@@ -134,7 +134,7 @@ class DB {
             try {
                 this.connect().then(()=>{
                     let models = mongoose.model(tableName,schema);
-                    models.create(conditions,(err)=>{
+                    models.remove(conditions,(err)=>{
                         if(!err){
                             resolve("success");
                         }else{

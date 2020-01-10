@@ -107,3 +107,15 @@ router.post('/uploadfiles', async (ctx, next) => {
 });
 ```
 
+## mongoose修改返回对象中的属性值
+mongoose默认是不让我们修改返回对象中的数据的,但是提供了lean()函数可以修改返回对象中的数据
+例如:
+```JavaScript
+models.find(conditions,projecttion,options,(err,docs)=>{
+    if(!err){
+        resolve(docs);
+    }else{
+        reject(err);
+    }
+}).lean();
+```

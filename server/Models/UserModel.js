@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     phone:String,
     email:String,
     create_time:{type:Number,default:Date.now},
-    role:Object
+    role_id:String
 });
 
 module.exports = userSchema;

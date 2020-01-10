@@ -1,8 +1,9 @@
 const menuList = [
     {
-        title:'首页',
-        key:'/admin/home',
-        icon:'home',
+        title:'首页',    //菜单标题名称
+        key:'/admin/home',   //对应的path
+        icon:'home',     //图标名称
+        isPublic:true,    //是否公开的
     },
     {
         title:'商品',

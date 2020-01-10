@@ -6,6 +6,8 @@ import {formateDate} from '../../utils/dateUtils.js'
 import {reqRoles,reqAddRole,reqUpdateRole} from '../../api/index'
 import AddForm from './add-form'
 import JurisdictionForm from './jurisdiction-form'
+import memoryUtils from '../../utils/memoryUtils.js';
+import storageUtils from '../../utils/storageUtils.js';
 /* 角色路由 */
 class Role extends Component {
     state = {
@@ -43,12 +45,17 @@ class Role extends Component {
                 if (result.status === 0) {
                     message.success('添加成功');
                     // this.getRoles();
+                    // 更新roles状态
                     const role = result.data;
-                    const roles = [...this.state.roles];
-                    roles.push(role);
-                    this.setState({
-                        roles
-                    });
+                    // const roles = [...this.state.roles];
+                    // roles.push(role);
+                    // this.setState({
+                    //     roles
+                    // });
+                    // 更新roles状态,基于原本状态数据更新
+                    this.setState(state=>({
+                        roles:[this.state.roles,role]
+                    }))
                 }else{
                     message.error('添加失败');
                 }
@@ -70,7 +77,19 @@ class Role extends Component {
         // 请求更新
         const result = await reqUpdateRole(role);
         if (result.status===0) {
-            message.success('设置角色权限成功')
+            // 如果当前更新的是自己角色的权限,强制退出
+            if (role._id === memoryUtils.user.role_id) {
+                memoryUtils.user = {};
+                storageUtils.removeUser();
+                this.props.history.replace('/login');
+                message.success('当前用户角色权限修改了,重新登录');
+            }else{
+                message.success('设置角色权限成功');
+                this.setState({
+                    roles:[...this.state.roles]
+                });
+            }
+           
         }else{
             message.error('设置角色权限失败')
         }

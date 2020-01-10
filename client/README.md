@@ -1,4 +1,5 @@
-哔哩哔哩视频看到`P93`
+哔哩哔哩视频看到`P105`
+`P94-99`还需多次观看下<br>
 
 目录结构:
 `src`
@@ -188,6 +189,45 @@ componentWillReceiveProps(nextProps){
     
 
 ## this.setState
+### setState()更新状态的2种方式
+1). setState(updater,[callback]), updater为返回stateChange对象的函数:`(state,props)=>stateChange`,接收的state和props被保证为最新的.
+例如:
+```jsx
+click1 =()=>{
+   this.setState((state,props)=>(count:state.count+1));
+}  
+```
+2). setState(stateChange,[callback])
+   stateChange为对象
+   callback是可选的回调函数,在状态更新且界面更新后才执行。
+例如：
+```jsx
+click2 =()=>{
+   this.setState({count:3});
+}  
+```
+
+总结:
+* 对象方式是函数方式的简写形式
+如果新状态不依赖于原状态  ===>  使用对象方式
+如果新状态依赖于原状态   ===>   使用函数方式
+如果需要在setState()后获取最新的状态数据,在第二个callback函数中读取
+
+### setState()更新状态是异步还是同步的?
+1). 执行setState()的位置?
+   在react控制的回调函数中:生命周期钩子 / react事件监听回调
+   非react控制的异步回调函数中:定时器回调 / 原生事件监听回调 / promise回调 / ....
+2). 异步 OR 同步?
+   react相关回调中:异步
+   其它异步回调中: 同步
+
+### 关于异步的setState()
+1). 多次调用,如何处理
+   setState({}):合并更新一次状态,只调用一次render()更新界面----> 状态更新和界面更新都合并了
+   setState(fn):更新多次状态,但只调用一次render()更新界面   -----> 状态更新没有合并,但界面更新合并了
+2). 如何得到异步更新后的状态数据?
+   在setState()的callback回调函数中
+
 `setState()`不能立即获取最新的状态,因为`setState()`是异步更新状态的的
 ```jsx
 this.setState(Object,callback)

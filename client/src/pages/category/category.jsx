@@ -190,7 +190,7 @@ class Category extends Component {
       return (
           <Card title={title} extra={extra}>
               <Table
-                rowKey='id'
+                rowKey='_id'
                 loading={loading}                     
                 dataSource={parentId==='0'?categorys:subCategorys} 
                 columns={this.columns}

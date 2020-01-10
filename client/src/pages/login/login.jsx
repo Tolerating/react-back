@@ -4,6 +4,7 @@ import {reqLogin} from '../../api/index'
 import storageUtils from '../../utils/storageUtils.js'
 import md5 from 'md5'
 import './login.less'
+import memoryUtils from '../../utils/memoryUtils'
 /* 登录的路由组件 */
 class Login extends Component {
     handleSubmit = (e)=>{
@@ -13,15 +14,15 @@ class Login extends Component {
             //   console.log('提交ajax请求', values);
                 const {username,password} = values;
                 const data = await reqLogin(username,password);
-                console.log(data);
+                // console.log(data);
                 if(data.status === 0){
-                    storageUtils.saveUser(data.data[0]);
+                    storageUtils.saveUser(data.data);
+                    memoryUtils.user=data.data;
+                    console.log(memoryUtils.user);
                     this.props.history.replace('/admin/home');  
                 }else{
                     message.error(data.msg);
-                }
-                console.log(data);
-               
+                }               
             }else{
                 console.log("校验失败!!");
             }
@@ -34,8 +35,8 @@ class Login extends Component {
     validatorPwd = (rule,value,callback)=>{
         if(!value){
             callback('密码必须输入');
-        }else if(value.length < 4){
-            callback('密码长度不能小于4位');
+        }else if(value.length < 3){
+            callback('密码长度不能小于3位');
         }else if(value.length > 12){
             callback('密码长度不能大于12位');
         }else if(!/^[a-zA-Z0-9]+$/.test(value)){
@@ -62,9 +63,9 @@ class Login extends Component {
                                 //声明式验证:直接使用别人定义好的规则进行验证
                                 rules: [
                                     { required: true,whitespace:true, message: '用户名必须输入'},
-                                    { min: 4, message: '用户名至少4位'},
+                                    { min: 2, message: '用户名至少2位'},
                                     { max: 12, message: '用户名最多12位'},
-                                    { pattern: /^[a-zA-Z0-9]+$/, message: '用户名必须是英文、数字或下划线组成'},
+                                    // { pattern: /^[a-zA-Z0-9]+$/, message: '用户名必须是英文、数字或下划线组成'},
                                 ],
                             })(
                                 <Input
