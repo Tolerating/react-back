@@ -13,7 +13,7 @@ import User from '../user/user'
 import Bar from '../charts/bar'
 import Line from '../charts/line'
 import Pie from '../charts/pie'
-
+import NotFound from '../not-found/not-found'
 const {Footer,Sider,Content} = Layout;
 /* 后台管理的路由组件 */
 class Admin extends Component {
@@ -32,6 +32,7 @@ class Admin extends Component {
                     <Header>header</Header>
                     <Content style={{margin:20,backgroundColor:'#fff'}}>
                         <Switch>
+                            <Redirect exact={true} from='/' to='/admin/home'></Redirect>
                             <Route path='/admin/home' component={Home}></Route>
                             <Route path='/admin/category' component={Category}></Route>
                             <Route path='/admin/product' component={Product}></Route>
@@ -40,7 +41,7 @@ class Admin extends Component {
                             <Route path='/admin/charts/bar' component={Bar}></Route>
                             <Route path='/admin/charts/line' component={Line}></Route>
                             <Route path='/admin/charts/pie' component={Pie}></Route>
-                            <Redirect to='/admin/home'></Redirect>
+                            <Route component={NotFound}></Route>
                         </Switch>
                     </Content>
                     <Footer style={{textAlign:'center',color:'#ccc'}}>推荐使用谷歌浏览器,可以获得更佳页面操作体验</Footer>
